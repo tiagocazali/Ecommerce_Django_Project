@@ -9,19 +9,31 @@ class Client(models.Model):
     session_id = models.CharField(max_length=200, null=True, blank=True)
     user = models.OneToOneField(User, max_length=200, null=True, blank=True, on_delete=models.CASCADE)
 
+
 class Category(models.Model): #EX: (Masc, Fem, Kids)
     name = models.CharField(max_length=200, null=True, blank=True)
 
+    def __str__(self) -> str:
+        return str(self.name)
+
+
 class CategoryType(models.Model): #EX: (T-shirt, Jacket, Underwear)
-    nome = models.CharField(max_length=200, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 class Product(models.Model):
-    image = models.CharField(max_length=400, null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     active = models.BooleanField(default=True)
     category_id = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
     categorytype_id = models.ForeignKey(CategoryType, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self) -> str:
+        return f"{self.name} / {self.category_id} / {self.categorytype_id} / {self.price}"
 
 class StockItem(models.Model):
     product_id = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
