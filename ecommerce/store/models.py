@@ -35,11 +35,13 @@ class Product(models.Model):
     def __str__(self) -> str:
         return f"{self.name} / {self.category_id} / {self.categorytype_id} / {self.price}"
 
+
 class StockItem(models.Model):
     product_id = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
     color = models.CharField(max_length=200, null=True, blank=True)
     size = models.CharField(max_length=20, null=True, blank=True)
     quant = models.IntegerField(default=0)
+
 
 class Address(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
@@ -62,3 +64,11 @@ class OrderItems(models.Model):
     order_id =  models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE)
     stockitem_id = models.ForeignKey(StockItem, null=True, blank=True, on_delete=models.SET_NULL)
     quant = models.IntegerField(default=0)
+
+class Banner(models.Model):
+    image = models.ImageField(null=True, blank=True)
+    link = models.CharField(max_length=400, null=True, blank=True)
+    active = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.link} - Active: {self.active}"

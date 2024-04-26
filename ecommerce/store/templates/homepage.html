@@ -6,4 +6,10 @@
 
 <h3> HOME PAGE</h3>
 
+{% for banner in banners %}
+    <a href="{% url 'store' %}{{banner.link}}">
+        <img src="{{ banner.image.url }}">
+    </a>
+{% endfor %}
+
 {% endblock %}

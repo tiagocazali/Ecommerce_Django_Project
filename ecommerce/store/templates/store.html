@@ -7,7 +7,9 @@
 
 {% for product in products %}
 
-    <img src="{{ product.image.url }}" , width="300" , height="400">
+    <a href="{% url 'product_description' product.id %}">  <!-- Redirect to product/product_id -->
+        <img src="{{ product.image.url }}" , width="300" , height="400">
+    </a>
     <p>{{ product.name }}</p>
     <p>{{ product.price }}</p>
 
