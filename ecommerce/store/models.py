@@ -33,15 +33,24 @@ class Product(models.Model):
     categorytype_id = models.ForeignKey(CategoryType, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        return f"{self.name} / {self.category_id} / {self.categorytype_id} / {self.price}"
+        return f"{self.name} / {self.category_id} / {self.categorytype_id} / {self.price} / Active:{self.active}"
 
+
+class Color(models.Model):
+    name = models.CharField(max_length=50, null=True, blank=True)
+    color_code = models.CharField(max_length=10, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return str(self.name)
 
 class StockItem(models.Model):
     product_id = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
-    color = models.CharField(max_length=200, null=True, blank=True)
+    color = models.ForeignKey(Color, null=True, blank=True, on_delete=models.SET_NULL)
     size = models.CharField(max_length=20, null=True, blank=True)
     quant = models.IntegerField(default=0)
 
+    def __str__(self) -> str:
+        return f"{self.product_id.name} / Size: {self.size} / Color: {self.color.name} / Quant: {self.quant}"
 
 class Address(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
@@ -53,6 +62,7 @@ class Address(models.Model):
     state = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
 
+
 class Order(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
     address_id = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
@@ -60,10 +70,12 @@ class Order(models.Model):
     purchase_date = models.DateTimeField(null=True, blank=True)
     transaction_code = models.CharField(max_length=200, null=True, blank=True)
 
+
 class OrderItems(models.Model):
     order_id =  models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE)
     stockitem_id = models.ForeignKey(StockItem, null=True, blank=True, on_delete=models.SET_NULL)
     quant = models.IntegerField(default=0)
+
 
 class Banner(models.Model):
     image = models.ImageField(null=True, blank=True)

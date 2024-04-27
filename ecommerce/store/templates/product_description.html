@@ -5,11 +5,32 @@
 
 <h3> {{ product.name }}</h3>
 
+{% if in_stock %}
+    
+    <img src="{{ product.image.url }}" , width="300" , height="400">
+    <p>{{ product.name }}</p>
+    <p>{{ product.price }}</p>
 
-<img src="{{ product.image.url }}" , width="300" , height="400">
-<p>{{ product.name }}</p>
-<p>{{ product.price }}</p>
+    {% for color in colors %}
+        <a href="{% url 'product_description' product.id color.id %}">
+            <i class="fa-solid fa-circle" style="color: {{color.color_code}}; "></i>
+            {{ color.name }}
+        </a>
+    {% endfor %}
 
-<button>Add to Chart</button>
+    <p>Color: {{selected_color_name}}</p>
+    <p>Chose your size: </p>
+
+    {% for size in sizes %}
+        <button> {{size}} </button>
+    {% endfor %}
+
+    
+    <button>Add to Chart</button>
+
+{% else %}
+    <p>Produto Indisponivel</p>
+
+{% endif %}
 
 {% endblock %}

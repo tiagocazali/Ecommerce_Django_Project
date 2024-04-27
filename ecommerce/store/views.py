@@ -16,9 +16,32 @@ def store(request, category=None):
     return render(request, 'store.html', context)
 
 
-def product_description(request, product_id):
+def product_description(request, product_id, color_id=None):
+    in_stock = False
+    sizes = {}
+    colors = {}
+    selected_color_name = None
+    
     product = Product.objects.get(id=product_id)
-    context = {'product': product}
+    product_in_stock = StockItem.objects.filter(product_id=product, quant__gt=0)
+    
+    if len(product_in_stock) > 0:
+        in_stock = True
+        colors = {each.color for each in product_in_stock}
+
+        if color_id:
+            selected_color_name = (Color.objects.get(id=color_id)).name
+            product_in_stock = StockItem.objects.filter(product_id=product, quant__gt=0, color__id=color_id)
+            sizes = {each.size for each in product_in_stock}
+
+    context = {'product': product, 
+               'stock_itens': product_in_stock, 
+               'in_stock': in_stock, 
+               'colors': colors, 
+               'sizes': sizes,
+               'selected_color_name': selected_color_name,
+            }
+    
     return render(request, 'product_description.html', context)
 
 

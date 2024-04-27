@@ -10,4 +10,5 @@ admin.site.register(Address)
 admin.site.register(Order)
 admin.site.register(OrderItems)
 admin.site.register(Banner)
+admin.site.register(Color)
 
