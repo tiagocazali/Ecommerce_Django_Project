@@ -18,15 +18,24 @@
         </a>
     {% endfor %}
 
-    <p>Color: {{selected_color_name}}</p>
-    <p>Chose your size: </p>
-
-    {% for size in sizes %}
-        <button> {{size}} </button>
-    {% endfor %}
-
+    <p>Color: {{selected_color.name}}</p>
     
-    <button>Add to Chart</button>
+    {% if sizes %}
+        <form method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+
+            <p>Chose your size: </p>
+
+            {% for size in sizes %}
+                <input type="radio" name="size" value="{{ size }}">
+                <label for="{{ size }}">{{ size }}</label> 
+            {% endfor %}
+            
+            <input type="hidden" name= "color" value="{{selected_color.id}}" >
+            <button type="submit">Add to Chart</button>
+        </form>
+    {% endif %}
+
 
 {% else %}
     <p>Produto Indisponivel</p>

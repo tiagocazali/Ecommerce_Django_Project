@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 
 
@@ -20,7 +20,7 @@ def product_description(request, product_id, color_id=None):
     in_stock = False
     sizes = {}
     colors = {}
-    selected_color_name = None
+    selected_color = None
     
     product = Product.objects.get(id=product_id)
     product_in_stock = StockItem.objects.filter(product_id=product, quant__gt=0)
@@ -30,22 +30,35 @@ def product_description(request, product_id, color_id=None):
         colors = {each.color for each in product_in_stock}
 
         if color_id:
-            selected_color_name = (Color.objects.get(id=color_id)).name
+            selected_color = Color.objects.get(id=color_id)
             product_in_stock = StockItem.objects.filter(product_id=product, quant__gt=0, color__id=color_id)
             sizes = {each.size for each in product_in_stock}
 
     context = {'product': product, 
-               'stock_itens': product_in_stock, 
                'in_stock': in_stock, 
                'colors': colors, 
                'sizes': sizes,
-               'selected_color_name': selected_color_name,
+               'selected_color': selected_color,
             }
     
     return render(request, 'product_description.html', context)
 
 
-def shopping_cart(request):
+def add_to_cart(request, product_id):
+    if request.method == 'POST' and product_id:
+        infos = request.POST.dict()
+        color = infos.get('color')
+        size = infos.get('size')
+
+        if not size:
+            return redirect('store')
+        
+        return redirect('shopping_cart')
+    else:
+        return redirect('store')
+
+
+def cart(request):
     return render(request, 'shopping_cart.html')
 
 
