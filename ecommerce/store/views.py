@@ -53,7 +53,7 @@ def add_to_cart(request, product_id):
         if not size:
             return redirect('store')
         
-        return redirect('shopping_cart')
+        return redirect('cart')
     else:
         return redirect('store')
 
@@ -73,3 +73,5 @@ def profile(request):
 def login(request):
     return render(request, 'login.html')
 
+
+# TODO: TEM QUE CRIAR A TELA DE CADASTRO DE USUÁRIO

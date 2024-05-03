@@ -9,6 +9,9 @@ class Client(models.Model):
     session_id = models.CharField(max_length=200, null=True, blank=True)
     user = models.OneToOneField(User, max_length=200, null=True, blank=True, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return str(self.email)
+
 
 class Category(models.Model): #EX: (Masc, Fem, Kids)
     name = models.CharField(max_length=200, null=True, blank=True)
@@ -43,6 +46,7 @@ class Color(models.Model):
     def __str__(self) -> str:
         return str(self.name)
 
+
 class StockItem(models.Model):
     product_id = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
     color = models.ForeignKey(Color, null=True, blank=True, on_delete=models.SET_NULL)
@@ -51,6 +55,7 @@ class StockItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.product_id.name} / Size: {self.size} / Color: {self.color.name} / Quant: {self.quant}"
+
 
 class Address(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
@@ -70,11 +75,17 @@ class Order(models.Model):
     purchase_date = models.DateTimeField(null=True, blank=True)
     transaction_code = models.CharField(max_length=200, null=True, blank=True)
 
+    def __str__(self) -> str:
+        return f"Order_id: {self.id} / Client: {self.client_id.email} / Finished:{self.finished}"
+
 
 class OrderItems(models.Model):
     order_id =  models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE)
     stockitem_id = models.ForeignKey(StockItem, null=True, blank=True, on_delete=models.SET_NULL)
     quant = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return f"Order Nº: {self.order_id} / Product: {self.stockitem_id.product_id.name} - {self.stockitem_id.size} - {self.stockitem_id.color.name} - Quant: {self.quant}"
 
 
 class Banner(models.Model):
