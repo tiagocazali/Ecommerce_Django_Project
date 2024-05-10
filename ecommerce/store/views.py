@@ -45,21 +45,48 @@ def product_description(request, product_id, color_id=None):
 
 
 def add_to_cart(request, product_id):
-    if request.method == 'POST' and product_id:
-        infos = request.POST.dict()
-        color = infos.get('color')
-        size = infos.get('size')
 
-        if not size:
+    if request.method == 'POST' and product_id:
+        
+        infos = request.POST.dict()
+        color_id = infos.get('color')
+        size = infos.get('size')
+       
+        if not size: # User didn't select the size
             return redirect('store')
         
+        if request.user.is_authenticated:
+            client = request.user.client
+
+        else:
+            return redirect('store')
+        
+        order, created = Order.objects.get_or_create(client_id=client, finished=False)
+        stockItem = StockItem.objects.get(product_id__id=product_id, color__id=color_id, size=size)
+
+        order_items, created = OrderItems.objects.get_or_create(order_id=order, stockitem_id=stockItem)
+        order_items.quant += 1
+        order_items.save()
+
         return redirect('cart')
+    
     else:
         return redirect('store')
 
 
 def cart(request):
-    return render(request, 'shopping_cart.html')
+    
+    if request.user.is_authenticated:
+        client = request.user.client
+        
+    order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
+    order_itens = OrderItems.objects.filter(order_id = order_number)
+    
+    context = {'order_itens': order_itens,
+               'order_number': order_number,
+            }
+    
+    return render(request, 'shopping_cart.html', context)
 
 
 def checkout(request):

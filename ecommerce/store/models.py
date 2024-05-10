@@ -76,7 +76,13 @@ class Order(models.Model):
     transaction_code = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"Order_id: {self.id} / Client: {self.client_id.email} / Finished:{self.finished}"
+        return f"Order_id: {self.id} / {self.client_id.email} / Finished: {self.finished}"
+    
+    @property
+    def total_price(self):
+        all_itens = OrderItems.objects.filter(order_id__id=self.id)
+        total = sum([item.total_price for item in all_itens])
+        return total
 
 
 class OrderItems(models.Model):
@@ -85,7 +91,11 @@ class OrderItems(models.Model):
     quant = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return f"Order Nº: {self.order_id} / Product: {self.stockitem_id.product_id.name} - {self.stockitem_id.size} - {self.stockitem_id.color.name} - Quant: {self.quant}"
+        return f"Order Nº: {self.order_id.id} / {self.stockitem_id.product_id.name} - {self.stockitem_id.size} - {self.stockitem_id.color.name} - Quant: {self.quant}"
+
+    @property
+    def total_price(self):
+        return self.quant * self.stockitem_id.product_id.price
 
 
 class Banner(models.Model):

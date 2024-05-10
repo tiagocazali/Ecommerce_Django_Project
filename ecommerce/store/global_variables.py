@@ -8,7 +8,7 @@ def quant_cart_itens (request):
     if request.user.is_authenticated:
         client = request.user.client
     else:
-        pass
+        return {'quant_cart_itens': quant_cart_itens}
     
     order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
     order_itens = OrderItems.objects.filter(order_id = order_number)

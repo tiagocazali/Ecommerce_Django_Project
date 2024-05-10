@@ -5,5 +5,21 @@
 {% block body %}
 
 <h3> CARRINHO </h3>
+<h4> Order Number: {{ order_number.id }}</h4>
+<p> Total Quantity Itens: {{ quant_cart_itens }} </p>
+<p> Total Price: R$ {{ order_number.total_price }} </p>
+
+{% for item in order_itens %}
+    <p>
+        <img src="{{ item.stockitem_id.product_id.image.url }}" width="50" height="70">
+        Product: {{ item.stockitem_id.product_id.name }}; 
+        Color: {{ item.stockitem_id.color.name }}; 
+        Size: {{ item.stockitem_id.size }}; 
+        Quant: {{ item.quant }};
+        Price: {{ item.stockitem_id.product_id.price }};
+        Total: {{ item.total_price }}
+    </p>
+
+{% endfor %}
 
 {% endblock %}
