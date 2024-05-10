@@ -15,10 +15,28 @@
         Product: {{ item.stockitem_id.product_id.name }}; 
         Color: {{ item.stockitem_id.color.name }}; 
         Size: {{ item.stockitem_id.size }}; 
-        Quant: {{ item.quant }};
+        <div style="display: flex;">
+            Quantity :
+            <!-- button to REMOVE one item -->
+            <form method="post" action="{% url 'remove_to_cart' item.stockitem_id.product_id.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
+                <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
+                <button type="submit">-</button>
+            </form>
+            {{ item.quant }};
+            <!-- bottom to ADD one item-->
+            <form method="post" action="{% url 'add_to_cart' item.stockitem_id.product_id.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
+                <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
+                <button type="submit">+</button>
+            </form>
+        </div>
         Price: {{ item.stockitem_id.product_id.price }};
         Total: {{ item.total_price }}
     </p>
+    <hr>
 
 {% endfor %}
 

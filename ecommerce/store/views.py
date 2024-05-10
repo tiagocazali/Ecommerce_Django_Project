@@ -51,14 +51,11 @@ def add_to_cart(request, product_id):
         infos = request.POST.dict()
         color_id = infos.get('color')
         size = infos.get('size')
-       
-        if not size: # User didn't select the size
-            return redirect('store')
         
         if request.user.is_authenticated:
             client = request.user.client
 
-        else:
+        else: # User is NOT authenticated
             return redirect('store')
         
         order, created = Order.objects.get_or_create(client_id=client, finished=False)
@@ -67,6 +64,36 @@ def add_to_cart(request, product_id):
         order_items, created = OrderItems.objects.get_or_create(order_id=order, stockitem_id=stockItem)
         order_items.quant += 1
         order_items.save()
+
+        return redirect('cart')
+    
+    else:
+        return redirect('store')
+
+
+def remove_to_cart(request, product_id):
+    
+    if request.method == 'POST' and product_id:
+        
+        infos = request.POST.dict()
+        color_id = infos.get('color')
+        size = infos.get('size')
+        
+        if request.user.is_authenticated:
+            client = request.user.client
+
+        else: # User is NOT authenticated
+            return redirect('store')
+        
+        order, created = Order.objects.get_or_create(client_id=client, finished=False)
+        stockItem = StockItem.objects.get(product_id__id=product_id, color__id=color_id, size=size)
+
+        order_items, created = OrderItems.objects.get_or_create(order_id=order, stockitem_id=stockItem)
+        order_items.quant -= 1
+        order_items.save()
+        
+        if order_items.quant <= 0:
+            order_items.delete()
 
         return redirect('cart')
     
