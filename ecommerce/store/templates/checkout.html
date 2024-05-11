@@ -5,5 +5,40 @@
 {% block body %}
 
 <h3> CHECKOUT </h3>
+<a href="{% url 'cart' %}">Back to Cart</a>
+
+<h4> Order Number: {{ order_number.id }}</h4>
+<p> Total Quantity Itens: {{ quant_cart_itens }} </p>
+<p> Total Price: R$ {{ order_number.total_price }} </p>
+
+<form method="post", action="">
+    {% csrf_token %}
+
+    <h3>chose one Address: </h3>
+
+    <a href="{% url 'new_address' %}">Add New Address</a><br>
+
+    {% for each_address in all_address %}
+        <input type="radio" name="address" value="{{ each_address.id }}">
+        <label for="{{ each_address.id }}">{{ each_address.description }} / 
+            {{ each_address.street }},{{ each_address.number }} - 
+            {{ each_address.complement }} - 
+            {{ each_address.city }}-{{ each_address.state }} - 
+            {{ each_address.cep }}
+        </label>
+        <br>
+    {% endfor %}
+
+
+    {% if not request.user.is_authenticated %}
+        <input type="email" name="email" placeholder="e-mail">
+    {% endif %}
+        
+    <hr>
+    <input type="hidden" value="{{ order_number.total_price }}" name="total">
+    <button type="submit">Finish Order - R$ {{order_number.total_price}}</button>
+
+</form>
+
 
 {% endblock %}

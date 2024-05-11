@@ -68,7 +68,7 @@ def add_to_cart(request, product_id):
             # If it is a NEW user, create an anonymous session for him 
             else:
                 session_id = str(uuid.uuid4())
-                resposta.set_cookie(key='session_id', value=session_id)
+                resposta.set_cookie(key='session_id', value=session_id, max_age=60*60*24*30) #Total of 30 days in Seconds
                 
             client, created = Client.objects.get_or_create(session_id=session_id)
 
@@ -150,7 +150,33 @@ def cart(request):
 
 
 def checkout(request):
-    return render(request, 'checkout.html')
+
+    if request.user.is_authenticated:
+        client = request.user.client
+            
+    else: 
+        # User is NOT authenticated, but already have a active session, get it
+        if request.COOKIES.get('session_id'):
+            session_id = request.COOKIES.get('session_id')
+            client, created = Client.objects.get_or_create(session_id=session_id)
+        
+        # User doesn't exist. Cart is empty
+        else:
+            return redirect('store')
+
+    order_number = Order.objects.get(client_id = client, finished=False)
+    all_address = Address.objects.filter(client_id=client)
+        
+    context = {'order_number': order_number,
+               'all_address': all_address,
+            }
+
+    return render(request, 'checkout.html', context)
+
+
+def new_address(request):
+    context = {}
+    return render(request, 'new_address.html', context)
 
 
 def profile(request):

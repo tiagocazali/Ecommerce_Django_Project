@@ -48,6 +48,8 @@
 
     {% endfor %}
 
+    <a href="{% url 'checkout' %}">GO TO CHECKOUT</a>
+
 <!-- If user doesn't exist, the cart is empty  -->
 {% else %}
     <h3> You don't have itens in your cart </h3>

@@ -6,6 +6,7 @@ class Client(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
     email = models.CharField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=200, null=True, blank=True)
+    phone2 = models.CharField(max_length=200, null=True, blank=True)
     session_id = models.CharField(max_length=200, null=True, blank=True)
     user = models.OneToOneField(User, max_length=200, null=True, blank=True, on_delete=models.CASCADE)
 
@@ -59,6 +60,7 @@ class StockItem(models.Model):
 
 class Address(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
+    description = models.CharField(max_length=200, null=True, blank=True)
     street = models.CharField(max_length=400, null=True, blank=True)
     number = models.IntegerField(default=0)
     complement = models.CharField(max_length=200, null=True, blank=True)
@@ -67,6 +69,8 @@ class Address(models.Model):
     state = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
 
+    def __str__(self) -> str:
+        return f"{self.client_id} / {self.description} / {self.street}, {self.number} - {self.city}-{self.state}"
 
 class Order(models.Model):
     client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
