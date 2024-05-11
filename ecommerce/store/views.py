@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
+import uuid
 
 
 def homepage(request):
@@ -52,20 +53,32 @@ def add_to_cart(request, product_id):
         color_id = infos.get('color')
         size = infos.get('size')
         
+        resposta = redirect('cart')
+
+        # If user IS Authenticated, get it. 
         if request.user.is_authenticated:
             client = request.user.client
 
-        else: # User is NOT authenticated
-            return redirect('store')
-        
+        else: 
+            # User is NOT authenticated, but already have a active session, get it
+            if request.COOKIES.get('session_id'):
+                session_id = request.COOKIES.get('session_id')
+                client = Client.objects.get(session_id=session_id)
+
+            # If it is a NEW user, create an anonymous session for him 
+            else:
+                session_id = str(uuid.uuid4())
+                resposta.set_cookie(key='session_id', value=session_id)
+                
+            client, created = Client.objects.get_or_create(session_id=session_id)
+
         order, created = Order.objects.get_or_create(client_id=client, finished=False)
         stockItem = StockItem.objects.get(product_id__id=product_id, color__id=color_id, size=size)
-
         order_items, created = OrderItems.objects.get_or_create(order_id=order, stockitem_id=stockItem)
         order_items.quant += 1
         order_items.save()
 
-        return redirect('cart')
+        return resposta
     
     else:
         return redirect('store')
@@ -82,9 +95,16 @@ def remove_to_cart(request, product_id):
         if request.user.is_authenticated:
             client = request.user.client
 
-        else: # User is NOT authenticated
-            return redirect('store')
+        else:
+            # User is NOT authenticated, but already have a active session, get it
+            if request.COOKIES.get('session_id'):
+                session_id = request.COOKIES.get('session_id')
+                client, created = Client.objects.get_or_create(session_id=session_id)
         
+            # User doesn't exist. Cart is empty
+            else:
+                return redirect('store')
+            
         order, created = Order.objects.get_or_create(client_id=client, finished=False)
         stockItem = StockItem.objects.get(product_id__id=product_id, color__id=color_id, size=size)
 
@@ -105,11 +125,24 @@ def cart(request):
     
     if request.user.is_authenticated:
         client = request.user.client
+            
+    else: 
+        # User is NOT authenticated, but already have a active session, get it
+        if request.COOKIES.get('session_id'):
+            session_id = request.COOKIES.get('session_id')
+            client, created = Client.objects.get_or_create(session_id=session_id)
         
+        # User doesn't exist. Cart is empty
+        else:
+            context = {'user_exist': False,}
+            return render(request, 'shopping_cart.html', context)
+
+
     order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
     order_itens = OrderItems.objects.filter(order_id = order_number)
     
-    context = {'order_itens': order_itens,
+    context = {'user_exist': True,
+               'order_itens': order_itens,
                'order_number': order_number,
             }
     

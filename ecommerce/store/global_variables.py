@@ -1,4 +1,4 @@
-from .models import Order, OrderItems
+from .models import Order, OrderItems, Client
 
 
 def quant_cart_itens (request):
@@ -7,11 +7,20 @@ def quant_cart_itens (request):
     
     if request.user.is_authenticated:
         client = request.user.client
+
     else:
-        return {'quant_cart_itens': quant_cart_itens}
+        # User is NOT authenticated, but already have a active session, get it
+        if request.COOKIES.get('session_id'):
+            session_id = request.COOKIES.get('session_id')
+            client, created = Client.objects.get_or_create(session_id=session_id)
+        
+        # User doesn't exist. Cart is empty
+        else:
+            return {'quant_cart_itens': quant_cart_itens}
     
     order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
     order_itens = OrderItems.objects.filter(order_id = order_number)
+    
     for each_item in order_itens:
         quant_cart_itens += each_item.quant
     

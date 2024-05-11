@@ -5,39 +5,53 @@
 {% block body %}
 
 <h3> CARRINHO </h3>
-<h4> Order Number: {{ order_number.id }}</h4>
-<p> Total Quantity Itens: {{ quant_cart_itens }} </p>
-<p> Total Price: R$ {{ order_number.total_price }} </p>
 
-{% for item in order_itens %}
-    <p>
-        <img src="{{ item.stockitem_id.product_id.image.url }}" width="50" height="70">
-        Product: {{ item.stockitem_id.product_id.name }}; 
-        Color: {{ item.stockitem_id.color.name }}; 
-        Size: {{ item.stockitem_id.size }}; 
-        <div style="display: flex;">
-            Quantity :
-            <!-- button to REMOVE one item -->
-            <form method="post" action="{% url 'remove_to_cart' item.stockitem_id.product_id.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
-                <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
-                <button type="submit">-</button>
-            </form>
-            {{ item.quant }};
-            <!-- bottom to ADD one item-->
-            <form method="post" action="{% url 'add_to_cart' item.stockitem_id.product_id.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
-                <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
-                <button type="submit">+</button>
-            </form>
-        </div>
-        Price: {{ item.stockitem_id.product_id.price }};
-        Total: {{ item.total_price }}
-    </p>
-    <hr>
+{% if user_exist %}
 
-{% endfor %}
+    <h4> Order Number: {{ order_number.id }}</h4>
+    <p> Total Quantity Itens: {{ quant_cart_itens }} </p>
+    <p> Total Price: R$ {{ order_number.total_price }} </p>
+
+    {% for item in order_itens %}
+        <p>
+            <img src="{{ item.stockitem_id.product_id.image.url }}" width="50" height="70">
+            Product: {{ item.stockitem_id.product_id.name }}; 
+            Color: {{ item.stockitem_id.color.name }}; 
+            Size: {{ item.stockitem_id.size }}; 
+            
+            <div style="display: flex;">
+                Quantity :
+
+                <!-- button to REMOVE one item -->
+                <form method="post" action="{% url 'remove_to_cart' item.stockitem_id.product_id.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
+                    <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
+                    <button type="submit">-</button>
+                </form>
+
+                {{ item.quant }}
+
+                <!-- bottom to ADD one item-->
+                <form method="post" action="{% url 'add_to_cart' item.stockitem_id.product_id.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="size" value="{{ item.stockitem_id.size }}">                   
+                    <input type="hidden" name="color" value="{{ item.stockitem_id.color.id }}" >
+                    <button type="submit">+</button>
+                </form>
+            </div>
+
+            Price: {{ item.stockitem_id.product_id.price }};
+            Total: {{ item.total_price }}
+        </p>
+        <hr>
+
+    {% endfor %}
+
+<!-- If user doesn't exist, the cart is empty  -->
+{% else %}
+    <h3> You don't have itens in your cart </h3>
+
+{% endif %}
 
 {% endblock %}
