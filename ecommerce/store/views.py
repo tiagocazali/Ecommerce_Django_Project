@@ -48,7 +48,6 @@ def product_description(request, product_id, color_id=None):
 def add_to_cart(request, product_id):
 
     if request.method == 'POST' and product_id:
-        
         infos = request.POST.dict()
         color_id = infos.get('color')
         size = infos.get('size')
@@ -175,8 +174,42 @@ def checkout(request):
 
 
 def new_address(request):
-    context = {}
-    return render(request, 'new_address.html', context)
+    
+    if request.user.is_authenticated:
+        client = request.user.client
+            
+    else: 
+        # User is NOT authenticated, but already have a active session, get it
+        if request.COOKIES.get('session_id'):
+            session_id = request.COOKIES.get('session_id')
+            client = Client.objects.get(session_id=session_id)
+        
+        # User doesn't exist. Cart is empty
+        else:
+            return redirect('store')
+        
+    # User SEND (add) a new Address        
+    if request.method == "POST": 
+        infos = request.POST.dict()
+        address = Address.objects.create(client_id=client,
+                                         description=infos.get('description'),
+                                         street=infos.get('street'),
+                                         number=int(infos.get('number')),
+                                         complement=infos.get('complement'),
+                                         cep=infos.get('cep'),
+                                         city=infos.get('city'),
+                                         state=infos.get('state'),
+                                         country=infos.get('country'),
+                                        )
+        address.save()
+        return redirect('checkout')
+
+    # User GET the existing data
+    else:
+        all_address = Address.objects.filter(client_id=client)
+        
+        context = {'all_address': all_address,}
+        return render(request, 'new_address.html', context)
 
 
 def profile(request):
