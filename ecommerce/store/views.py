@@ -3,21 +3,45 @@ from .models import *
 import uuid
 
 
+def get_user_id(request):
+    """Function to Get user_id if the user is or not Authenticated"""
+
+    if request.user.is_authenticated:
+            client = request.user.client
+
+    else:
+        # User is NOT authenticated, but already have a active session, get it
+        if request.COOKIES.get('session_id'):
+            session_id = request.COOKIES.get('session_id')
+            client = Client.objects.get(session_id=session_id)
+    
+        # User doesn't exist. Cart is empty
+        else:
+            client=None
+    
+    return client
+
+
 def homepage(request):
+    
     banners = Banner.objects.all()
     context = {'banners': banners}
     return render(request, 'homepage.html', context)
 
 
 def store(request, category=None):
+
     product_list = Product.objects.filter(active=True)
+
     if category:
         product_list = product_list.filter(categorytype_id__name=category)
+
     context = {'products': product_list}
     return render(request, 'store.html', context)
 
 
 def product_description(request, product_id, color_id=None):
+    
     in_stock = False
     sizes = {}
     colors = {}
@@ -48,27 +72,19 @@ def product_description(request, product_id, color_id=None):
 def add_to_cart(request, product_id):
 
     if request.method == 'POST' and product_id:
+        
         infos = request.POST.dict()
         color_id = infos.get('color')
         size = infos.get('size')
-        
+
         resposta = redirect('cart')
 
-        # If user IS Authenticated, get it. 
-        if request.user.is_authenticated:
-            client = request.user.client
+        client = get_user_id(request)
 
-        else: 
-            # User is NOT authenticated, but already have a active session, get it
-            if request.COOKIES.get('session_id'):
-                session_id = request.COOKIES.get('session_id')
-                client = Client.objects.get(session_id=session_id)
-
-            # If it is a NEW user, create an anonymous session for him 
-            else:
-                session_id = str(uuid.uuid4())
-                resposta.set_cookie(key='session_id', value=session_id, max_age=60*60*24*30) #Total of 30 days in Seconds
-                
+        # If it is a NEW user, create an anonymous session for him 
+        if not client:
+            session_id = str(uuid.uuid4())
+            resposta.set_cookie(key='session_id', value=session_id, max_age=60*60*24*30) #Total of 30 days in Seconds
             client, created = Client.objects.get_or_create(session_id=session_id)
 
         order, created = Order.objects.get_or_create(client_id=client, finished=False)
@@ -91,18 +107,11 @@ def remove_to_cart(request, product_id):
         color_id = infos.get('color')
         size = infos.get('size')
         
-        if request.user.is_authenticated:
-            client = request.user.client
-
-        else:
-            # User is NOT authenticated, but already have a active session, get it
-            if request.COOKIES.get('session_id'):
-                session_id = request.COOKIES.get('session_id')
-                client, created = Client.objects.get_or_create(session_id=session_id)
-        
-            # User doesn't exist. Cart is empty
-            else:
-                return redirect('store')
+        client= get_user_id(request)
+    
+        # User doesn't exist. Cart is empty
+        if not client:
+            return redirect('store')
             
         order, created = Order.objects.get_or_create(client_id=client, finished=False)
         stockItem = StockItem.objects.get(product_id__id=product_id, color__id=color_id, size=size)
@@ -122,20 +131,12 @@ def remove_to_cart(request, product_id):
 
 def cart(request):
     
-    if request.user.is_authenticated:
-        client = request.user.client
-            
-    else: 
-        # User is NOT authenticated, but already have a active session, get it
-        if request.COOKIES.get('session_id'):
-            session_id = request.COOKIES.get('session_id')
-            client, created = Client.objects.get_or_create(session_id=session_id)
-        
-        # User doesn't exist. Cart is empty
-        else:
-            context = {'user_exist': False,}
-            return render(request, 'shopping_cart.html', context)
+    client = get_user_id(request)
 
+    # User doesn't exist. Cart is empty
+    if not client:
+        context = {'user_exist': False,}
+        return render(request, 'shopping_cart.html', context)
 
     order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
     order_itens = OrderItems.objects.filter(order_id = order_number)
@@ -150,18 +151,11 @@ def cart(request):
 
 def checkout(request):
 
-    if request.user.is_authenticated:
-        client = request.user.client
-            
-    else: 
-        # User is NOT authenticated, but already have a active session, get it
-        if request.COOKIES.get('session_id'):
-            session_id = request.COOKIES.get('session_id')
-            client, created = Client.objects.get_or_create(session_id=session_id)
-        
-        # User doesn't exist. Cart is empty
-        else:
-            return redirect('store')
+    client = get_user_id(request)
+
+    # User doesn't exist. Cart is empty
+    if not client:
+        return redirect('store')
 
     order_number = Order.objects.get(client_id = client, finished=False)
     all_address = Address.objects.filter(client_id=client)
@@ -175,19 +169,8 @@ def checkout(request):
 
 def new_address(request):
     
-    if request.user.is_authenticated:
-        client = request.user.client
-            
-    else: 
-        # User is NOT authenticated, but already have a active session, get it
-        if request.COOKIES.get('session_id'):
-            session_id = request.COOKIES.get('session_id')
-            client = Client.objects.get(session_id=session_id)
-        
-        # User doesn't exist. Cart is empty
-        else:
-            return redirect('store')
-        
+    client = get_user_id(request)
+
     # User SEND (add) a new Address        
     if request.method == "POST": 
         infos = request.POST.dict()
