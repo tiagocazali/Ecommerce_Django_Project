@@ -1,4 +1,4 @@
-from .models import Order, OrderItems, Client
+from .models import Order, OrderItems, Client, Category, CategoryType
 
 
 def quant_cart_itens (request):
@@ -25,3 +25,11 @@ def quant_cart_itens (request):
         quant_cart_itens += each_item.quant
     
     return {'quant_cart_itens': quant_cart_itens}
+
+
+def all_category_und_type(request):
+    
+    all_category = Category.objects.all()
+    all_type = CategoryType.objects.all()
+
+    return { 'all_category':all_category, 'all_type':all_type}

@@ -1,12 +1,25 @@
 {% load static %}
 
 <nav>
-    <a href="{% url 'homepage' %}">TCM - E-commerce</a>
+    <a href="{% url 'homepage' %}">TCM</a>
     <a href="{% url 'store' %}">Store</a>
     <a href="{% url 'login' %}">Login</a>
     <a href="{% url 'profile' %}">Profile</a>
-    <a href="{% url 'cart' %}">Shopping_Cart</a>
+    <a href="{% url 'cart' %}">Cart</a>
     <img src="{% static 'images/carrinho.png' %}" width="30px" height="30px"> 
     {{ quant_cart_itens }}
+
+
+    <div style="display: flex;">
+        {% for category in all_category %}
+            <div>
+                <a href="{% url 'store' %}{{category.slug}}">{{category.name}}:</a>
+                <br>
+                {% for type in all_type %}
+                    <a href="{% url 'store' %}{{category.slug}}-{{type.slug}}">{{type.name}}</a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
 
 </nav>

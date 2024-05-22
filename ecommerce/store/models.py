@@ -16,6 +16,7 @@ class Client(models.Model):
 
 class Category(models.Model): #EX: (Masc, Fem, Kids)
     name = models.CharField(max_length=200, null=True, blank=True)
+    slug = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -23,6 +24,7 @@ class Category(models.Model): #EX: (Masc, Fem, Kids)
 
 class CategoryType(models.Model): #EX: (T-shirt, Jacket, Underwear)
     name = models.CharField(max_length=200, null=True, blank=True)
+    slug = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -33,11 +35,11 @@ class Product(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     active = models.BooleanField(default=True)
-    category_id = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
-    categorytype_id = models.ForeignKey(CategoryType, null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    categorytype = models.ForeignKey(CategoryType, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        return f"{self.name} / {self.category_id} / {self.categorytype_id} / {self.price} / Active:{self.active}"
+        return f"{self.name} / {self.category} / {self.categorytype} / {self.price} / Active:{self.active}"
 
 
 class Color(models.Model):
@@ -49,17 +51,17 @@ class Color(models.Model):
 
 
 class StockItem(models.Model):
-    product_id = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
+    product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.SET_NULL)
     color = models.ForeignKey(Color, null=True, blank=True, on_delete=models.SET_NULL)
     size = models.CharField(max_length=20, null=True, blank=True)
     quant = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return f"{self.product_id.name} / Size: {self.size} / Color: {self.color.name} / Quant: {self.quant}"
+        return f"{self.product.name} / Size: {self.size} / Color: {self.color.name} / Quant: {self.quant}"
 
 
 class Address(models.Model):
-    client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
+    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.SET_NULL)
     description = models.CharField(max_length=200, null=True, blank=True)
     street = models.CharField(max_length=400, null=True, blank=True)
     number = models.IntegerField(default=0)
@@ -70,36 +72,36 @@ class Address(models.Model):
     country = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.client_id} / {self.description} / {self.street}, {self.number} - {self.city}-{self.state}"
+        return f"{self.client} / {self.description} / {self.street}, {self.number} - {self.city}-{self.state}"
 
 class Order(models.Model):
-    client_id = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
-    address_id = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
+    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
     finished = models.BooleanField(default=False)
     purchase_date = models.DateTimeField(null=True, blank=True)
     transaction_code = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"Order_id: {self.id} / {self.client_id.email} / Finished: {self.finished}"
+        return f"Order_id: {self.id} / {self.client.email} / Finished: {self.finished}"
     
     @property
     def total_price(self):
-        all_itens = OrderItems.objects.filter(order_id__id=self.id)
+        all_itens = OrderItems.objects.filter(order__id=self.id)
         total = sum([item.total_price for item in all_itens])
         return total
 
 
 class OrderItems(models.Model):
-    order_id =  models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE)
-    stockitem_id = models.ForeignKey(StockItem, null=True, blank=True, on_delete=models.SET_NULL)
+    order =  models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE)
+    stockitem = models.ForeignKey(StockItem, null=True, blank=True, on_delete=models.SET_NULL)
     quant = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return f"Order Nº: {self.order_id.id} / {self.stockitem_id.product_id.name} - {self.stockitem_id.size} - {self.stockitem_id.color.name} - Quant: {self.quant}"
+        return f"Order Nº: {self.order.id} / {self.stockitem.product.name} - {self.stockitem.size} - {self.stockitem.color.name} - Quant: {self.quant}"
 
     @property
     def total_price(self):
-        return self.quant * self.stockitem_id.product_id.price
+        return self.quant * self.stockitem.product.price
 
 
 class Banner(models.Model):
