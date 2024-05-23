@@ -29,13 +29,22 @@ def homepage(request):
     return render(request, 'homepage.html', context)
 
 
-def store(request, category=None):
+def store(request, filter=None):
 
-    product_list = Product.objects.filter(active=True)
-
-    if category:
-        product_list = product_list.filter(category__slug=category)
-
+    if filter: 
+        # Filter contain: "category-type"
+        if "-" in filter:
+            category, category_type = filter.split("-")
+            product_list = Product.objects.filter(category__slug=category, categorytype__slug=category_type, active=True)
+        
+        #Filter contain only "category"
+        else:
+            product_list = Product.objects.filter(category__slug=filter, active=True)
+    
+    else:
+        #there is no filter, so show all products
+        product_list = Product.objects.filter(active=True)
+        
     context = {'products': product_list}
     return render(request, 'store.html', context)
 
