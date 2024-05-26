@@ -5,6 +5,32 @@
 
 <h3> STORE</h3>
 
+<form method="post" action="">
+    <p>Price</p>
+        <input type="number" name="minimum_price" value="{{ minimum_price }}">
+        <input type="number" name="maximum_price" value="{{ maximum_price }}">
+
+    <p>Size</p>
+        {% for size in sizes %}
+            <input type="radio" name="size" value="{{ size }}">
+            <label for="{{ size }}">{{ size }}</label> 
+        {% endfor %}
+
+    <p>Category</p>
+        {% for category in all_category %}
+            <input type="radio" name="category" value="{{ category.slug }}">
+            <label for="{{ category.slug }}">{{ category.name }}</label> 
+        {% endfor %}
+
+    <p>Type</p>
+        {% for type in all_type %}
+            <input type="radio" name="category" value="{{ type.slug }}">
+            <label for="{{ type.slug }}">{{ type.name }}</label> 
+        {% endfor %}
+
+
+</form>
+
 {% for product in products %}
 
     <a href="{% url 'product_description' product.id %}">  <!-- Redirect to product/product_id -->

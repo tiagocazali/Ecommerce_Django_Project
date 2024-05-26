@@ -1,25 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import *
+from .util import *
 import uuid
-
-
-def get_user_id(request):
-    """Function to Get user_id if the user is or not Authenticated"""
-
-    if request.user.is_authenticated:
-            client = request.user.client
-
-    else:
-        # User is NOT authenticated, but already have a active session, get it
-        if request.COOKIES.get('session_id'):
-            session_id = request.COOKIES.get('session_id')
-            client = Client.objects.get(session_id=session_id)
-    
-        # User doesn't exist. Cart is empty
-        else:
-            client=None
-    
-    return client
 
 
 def homepage(request):
@@ -31,21 +13,17 @@ def homepage(request):
 
 def store(request, filter=None):
 
-    if filter: 
-        # Filter contain: "category-type"
-        if "-" in filter:
-            category, category_type = filter.split("-")
-            product_list = Product.objects.filter(category__slug=category, categorytype__slug=category_type, active=True)
+    product_list = filter_url(filter)
+    minimum_price, maximum_price = minimum_maximum_price(product_list)
+
+    sizes = ["P", "M", "G"]
         
-        #Filter contain only "category"
-        else:
-            product_list = Product.objects.filter(category__slug=filter, active=True)
+    context = {'products': product_list,
+               'minimum_price': minimum_price,
+               'maximum_price': maximum_price,
+               'sizes': sizes,
+            }
     
-    else:
-        #there is no filter, so show all products
-        product_list = Product.objects.filter(active=True)
-        
-    context = {'products': product_list}
     return render(request, 'store.html', context)
 
 
