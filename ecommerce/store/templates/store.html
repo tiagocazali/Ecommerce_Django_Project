@@ -6,6 +6,8 @@
 <h3> STORE</h3>
 
 <form method="post" action="">
+    {% csrf_token %}
+    
     <p>Price</p>
         <input type="number" name="minimum_price" value="{{ minimum_price }}">
         <input type="number" name="maximum_price" value="{{ maximum_price }}">
@@ -28,6 +30,7 @@
             <label for="{{ type.slug }}">{{ type.name }}</label> 
         {% endfor %}
 
+        <button type="submit">Apply Filters</button>
 
 </form>
 

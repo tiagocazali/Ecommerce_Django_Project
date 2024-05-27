@@ -15,9 +15,12 @@ def store(request, filter=None):
 
     product_list = filter_url(filter)
     minimum_price, maximum_price = minimum_maximum_price(product_list)
+    sizes = all_sizes(product_list)
 
-    sizes = ["P", "M", "G"]
-        
+    if request.method == 'POST':
+        #FALTA FAZER ESSA LOGICA DO FILTRO AINDA
+        pass
+           
     context = {'products': product_list,
                'minimum_price': minimum_price,
                'maximum_price': maximum_price,

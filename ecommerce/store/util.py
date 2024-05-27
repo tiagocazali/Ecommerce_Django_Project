@@ -1,4 +1,4 @@
-from .models import Product,Client
+from .models import Product, Client, StockItem
 from django.db.models import Min, Max
 
 
@@ -57,3 +57,9 @@ def minimum_maximum_price(product_list):
     return minimum_price, maximum_price
 
 
+def all_sizes(product_list):
+    
+    itens = StockItem.objects.filter(quant__gt=0, product__in=product_list)
+    sizes = itens.values_list("size", flat=True).distinct()
+
+    return sizes
