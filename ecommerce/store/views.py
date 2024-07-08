@@ -17,9 +17,23 @@ def store(request, filter=None):
     minimum_price, maximum_price = minimum_maximum_price(product_list)
     sizes = all_sizes(product_list)
 
-    if request.method == 'POST':
-        #FALTA FAZER ESSA LOGICA DO FILTRO AINDA
-        pass
+    # Apply filter from Formular 
+    if request.method == 'POST': 
+        infos = request.POST.dict()
+
+        product_list = product_list.filter(price__gte=infos.get('minimum_price'), price__lte=infos.get('maximum_price'))
+        
+        if "size" in infos:
+            itens = StockItem.objects.filter(quant__gt=0, product__in=product_list, size=infos.get('size'))
+            products_id = itens.values_list("product", flat=True).distinct()
+            product_list =product_list.filter(id__in=products_id)
+
+        if "type" in infos:
+            product_list = product_list.filter(categorytype__slug=infos.get("type"))
+
+        if "category" in infos:
+            product_list = product_list.filter(category__slug=infos.get("category"))
+    
            
     context = {'products': product_list,
                'minimum_price': minimum_price,
