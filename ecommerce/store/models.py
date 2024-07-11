@@ -40,7 +40,11 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} / {self.category} / {self.categorytype} / {self.price} / Active:{self.active}"
-
+    
+    def total_sell(self):
+        itens = OrderItems.objects.filter(order__finished=True, stockitem__product=self.id)
+        total = sum([item.quant for item in itens ])
+        return total
 
 class Color(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)

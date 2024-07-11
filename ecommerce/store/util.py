@@ -63,3 +63,22 @@ def all_sizes(product_list):
     sizes = itens.values_list("size", flat=True).distinct()
 
     return sizes
+
+
+def order_itens(product_list, order):
+
+    if order == "lower-price":
+        product_list = product_list.order_by('price')
+    
+    elif order == "higher-price":
+        product_list = product_list.order_by('-price')
+    
+    elif order == "most-popular":
+        aux_list = []
+        for product in product_list:
+            aux_list.append((product.total_sell(), product))
+
+        aux_list = sorted(aux_list, key=lambda x: x[0], reverse=True)
+        product_list = [item[1] for item in aux_list]
+
+    return product_list

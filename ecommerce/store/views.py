@@ -19,6 +19,7 @@ def store(request, filter=None):
 
     # Apply filter from Formular 
     if request.method == 'POST': 
+       
         infos = request.POST.dict()
 
         product_list = product_list.filter(price__gte=infos.get('minimum_price'), price__lte=infos.get('maximum_price'))
@@ -31,10 +32,11 @@ def store(request, filter=None):
         if "type" in infos:
             product_list = product_list.filter(categorytype__slug=infos.get("type"))
 
-        if "category" in infos:
-            product_list = product_list.filter(category__slug=infos.get("category"))
-    
-           
+    #Get the Order parameter in the URL and send it to "order_itens" function. By Default is "lower-price"
+    #http://127.0.0.1:8000/store/women/?order=lower-price
+    order = request.GET.get("order", "lower-price")
+    product_list = order_itens(product_list, order)
+
     context = {'products': product_list,
                'minimum_price': minimum_price,
                'maximum_price': maximum_price,
