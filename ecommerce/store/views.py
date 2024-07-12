@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .util import *
+from django.contrib.auth import login, logout, authenticate
 import uuid
+
 
 
 def homepage(request):
@@ -205,8 +207,34 @@ def profile(request):
     return render(request, 'user/profile.html')
 
 
-def login(request):
-    return render(request, 'user/login.html')
+def login_page(request):
+    
+    problem = False
+
+    #is is already authenticated, just redirect
+    if request.user.is_authenticated:
+        return redirect('store')
+    
+    if request.method == "POST":
+        infos = request.POST.dict()
+
+        if "email" in infos and "password" in infos:
+            email = infos.get("email")
+            password = infos.get("password")
+            user = authenticate(request, username=email, password=password)
+
+            if user:
+                login(request, user)
+                return redirect('profile')
+            else:
+                problem = True
+
+        else:
+            problem = True
+    
+    context = { "problem": problem}
+    return render(request, 'user/login.html', context)
+
 
 def create_account(request):
     return render(request, 'user/create_account.html')

@@ -3,7 +3,7 @@ from django.db.models import Min, Max
 
 
 def get_user_id(request):
-    """Function to Get user_id if the user is or not Authenticated"""
+    """Function to Get user_id if the user IS or NOT Authenticated"""
 
     if request.user.is_authenticated:
             client = request.user.client

@@ -6,7 +6,11 @@
 
 <h3> LOGIN </h3>
 
-<form method="POST" action="">
+{% if problem %}
+    <h4>User not found. Incorrect user or password!</h4>
+{% endif %}
+
+<form method="POST" action="{% url 'login_page' %}">
     {% csrf_token %}
 
     <input type="email" name="email" placeholder="email">

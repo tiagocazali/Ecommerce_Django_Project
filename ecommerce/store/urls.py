@@ -19,6 +19,6 @@ urlpatterns = [
     path('new-address/', views.new_address, name="new_address"),
     
     path('profile/', views.profile, name="profile"),
-    path('login/', views.login, name="login"),
+    path('login_page/', views.login_page, name="login_page"),
     path('create-account/', views.create_account, name="create_account"),
 ]
