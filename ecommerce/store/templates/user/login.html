@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block body %}
+
+<h3> LOGIN </h3>
+
+<form method="POST" action="">
+    {% csrf_token %}
+
+    <input type="email" name="email" placeholder="email">
+    <input type="password" name="password" placeholder="password">
+    <button type="submit">Submit</button>
+
+</form>
+
+<a href="{% url 'create_account' %}">Create New Account</a>
+<a href="#">Forgot the password?</a>
+
+{% endblock %}

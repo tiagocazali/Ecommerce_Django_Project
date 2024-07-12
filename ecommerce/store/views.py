@@ -202,11 +202,14 @@ def new_address(request):
 
 
 def profile(request):
-    return render(request, 'profile.html')
+    return render(request, 'user/profile.html')
 
 
 def login(request):
-    return render(request, 'login.html')
+    return render(request, 'user/login.html')
+
+def create_account(request):
+    return render(request, 'user/create_account.html')
 
 
 # TODO: TEM QUE CRIAR A TELA DE CADASTRO DE USUÁRIO
