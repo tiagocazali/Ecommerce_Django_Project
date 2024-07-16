@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .util import *
-from django.contrib.auth import login, logout, authenticate
 import uuid
+from django.contrib.auth import login, logout, authenticate
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 
 
@@ -35,7 +37,7 @@ def store(request, filter=None):
             product_list = product_list.filter(categorytype__slug=infos.get("type"))
 
     #Get the Order parameter in the URL and send it to "order_itens" function. By Default is "lower-price"
-    #http://127.0.0.1:8000/store/women/?order=lower-price
+    #http://127.0.0.1:8000/store/women/?order=lower-price  <== here
     order = request.GET.get("order", "lower-price")
     product_list = order_itens(product_list, order)
 
@@ -237,7 +239,59 @@ def login_page(request):
 
 
 def create_account(request):
-    return render(request, 'user/create_account.html')
 
+    problem= None
 
-# TODO: TEM QUE CRIAR A TELA DE CADASTRO DE USUÁRIO
+    if request.user.is_authenticated:
+        return redirect('store')
+    
+    if request.method == "POST":
+        infos = request.POST.dict()
+
+        if ('email' in infos) and ('password' in infos) and ('confirm_password' in infos):
+            email = infos.get('email')
+            password = infos.get("password")
+            confirm_password = infos.get("confirm_password")
+
+            try:
+                validate_email(email)
+            except validate_email:
+                problem = "Invalid email. Please enter a valid email."
+
+            if password == confirm_password:
+                #create user in USER Table, used for Django.
+                user, created = User.objects.get_or_create(username=email, email=email)
+
+                if created:
+                    user.set_password(password)
+                    user.save()
+
+                    #Authenticate and make automatic login
+                    user = authenticate(request, username=email, password=password)
+                    login(request, user)
+
+                    #Now create de user in the Client Table.
+                    #But before create the user, check if already exist an session. If exist, just update it.
+                    if request.COOKIES.get('session_id'):
+                        session_id = request.COOKIES.get('session_id')
+                        client = Client.objects.get(session_id=session_id)
+                    else:
+                        client, created = Client.objects.get_or_create(email=email)
+                    
+                    client.user = user
+                    client.email = email
+                    client.save()
+
+                    return redirect('store')
+
+                else:
+                    problem = "User already exists. Please log in with your email."
+
+            else:
+                problem = "Invalid passwords. The confirmation must match the password."
+
+        else:
+            problem = "Incorrect input error. Use a valid e-mail and/or password"
+
+    context = { "problem": problem}
+    return render(request, 'user/create_account.html', context)
