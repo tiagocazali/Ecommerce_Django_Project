@@ -18,7 +18,7 @@ def quant_cart_itens (request):
         else:
             return {'quant_cart_itens': quant_cart_itens}
     
-    order_number, created = Order.objects.get_or_create(client_id = client, finished=False)
+    order_number, created = Order.objects.get_or_create(client_id = client.id, finished=False)
     order_itens = OrderItems.objects.filter(order_id = order_number)
     
     for each_item in order_itens:

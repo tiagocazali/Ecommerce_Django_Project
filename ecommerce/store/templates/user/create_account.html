@@ -6,6 +6,10 @@
 
 <h3> CREATE NEW ACCOUNT </h3>
 
+{% if problem %}
+    <h4>{{ problem }}</h4>
+{% endif %}
+
 <form method="POST" action="">
     {% csrf_token %}
 

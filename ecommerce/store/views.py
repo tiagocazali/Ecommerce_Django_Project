@@ -295,3 +295,8 @@ def create_account(request):
 
     context = { "problem": problem}
     return render(request, 'user/create_account.html', context)
+
+
+def logout_page(request):
+    logout(request)
+    return redirect('login_page')
