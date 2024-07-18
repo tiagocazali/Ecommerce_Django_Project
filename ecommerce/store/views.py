@@ -3,9 +3,9 @@ from .models import *
 from .util import *
 import uuid
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
 
 
 def homepage(request):
@@ -205,6 +205,7 @@ def new_address(request):
         return render(request, 'new_address.html', context)
 
 
+@login_required
 def profile(request):
     return render(request, 'user/profile.html')
 
@@ -297,6 +298,7 @@ def create_account(request):
     return render(request, 'user/create_account.html', context)
 
 
+@login_required
 def logout_page(request):
     logout(request)
     return redirect('login_page')
