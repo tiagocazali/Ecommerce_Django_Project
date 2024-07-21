@@ -1,6 +1,8 @@
 from os import name
-from django.urls import path
 from . import views
+from django.urls import path
+from django.contrib.auth import views as views_django
+
 
 urlpatterns = [
     path('', views.homepage, name="homepage"),
@@ -22,5 +24,14 @@ urlpatterns = [
     path('create-account/', views.create_account, name="create_account"),
     path('login-page/', views.login_page, name="login_page"),
     path('logout-page', views.logout_page, name="logout_page"),
+
+    # Default Django Views - Used for Change/Reset Password
+    path("password_change/", views_django.PasswordChangeView.as_view(), name="password_change"),
+    path("password_change/done/", views_django.PasswordChangeDoneView.as_view(), name="password_change_done"),
+    
+    path("password_reset/", views_django.PasswordResetView.as_view(), name="password_reset"),
+    path("password_reset/done/", views_django.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path("reset/<uidb64>/<token>/", views_django.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("reset/done/", views_django.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
 
 ]

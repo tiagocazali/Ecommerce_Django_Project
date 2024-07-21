@@ -136,3 +136,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login_page'
+
+# Will simulate a e-mail "Reset Password" - and print it in Console.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
