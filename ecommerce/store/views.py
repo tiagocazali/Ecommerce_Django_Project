@@ -1,3 +1,4 @@
+from locale import Error
 from django.shortcuts import render, redirect
 from .models import *
 from .util import *
@@ -207,7 +208,68 @@ def new_address(request):
 
 @login_required
 def profile(request):
-    return render(request, 'user/profile.html')
+
+    problem = None
+    changes_done = False
+
+    if request.method == 'POST':
+        infos = request.POST.dict()
+        
+        # user clicked in "Change Password"
+        if 'actual_password' in infos:
+
+            actual_password = infos.get("actual_password")
+            new_password = infos.get("new_password")
+            confirm_password = infos.get("confirm_password")
+
+            if new_password == confirm_password:
+                user = authenticate(request, username=request.user.email, password=actual_password)
+                if user:
+                    user.set_password(new_password)
+                    user.save()
+                    changes_done = True
+                
+                else:
+                    problem = "Wrong password! The Actual password is NOT correct. Try Again"
+
+            else:
+                problem = "New Password and Confirmation Password is NOT igual! Try again"
+
+
+        # user is updating personal data - clicked in "Save"
+        elif 'email' in infos:
+            name = infos.get('name')
+            email = infos.get('email')
+            phone = infos.get('phone')
+
+            #user changed his E-mail. Check if the new e-mail is available
+            if email != request.user.email:
+                search = User.objects.filter(email=email)
+                if len(search) > 0:
+                    problem = "E-mail already exist in Database. Try another one!"
+
+            if not problem:
+                client = request.user.client
+                client.email = email
+                request.user.email = email
+                request.user.username = email
+                client.nome = name
+                client.phone = phone
+                client.save()
+                request.user.save()
+                changes_done = True
+
+
+        # user didn't fill the password neither e-mail 
+        else:
+            problem = "Invalid information (Form). Try again"
+
+    
+    context = {'problem': problem,
+               'changes_done': changes_done,
+            }
+    
+    return render(request, 'user/profile.html', context)
 
 
 def login_page(request):
@@ -256,7 +318,7 @@ def create_account(request):
 
             try:
                 validate_email(email)
-            except validate_email:
+            except ValidationError:
                 problem = "Invalid email. Please enter a valid email."
 
             if password == confirm_password:

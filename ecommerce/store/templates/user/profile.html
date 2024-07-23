@@ -8,4 +8,34 @@
 
 <a href="{% url 'logout_page' %}">Logout</a>
 
+{% if changes_done %}
+    <p>OK! Changes Save Successfully!</p>
+{% endif %}
+
+{% if problem %}
+ <p> {{ problem }} </p>
+{% endif %}
+
+<h3>Personal Information</h3>
+<form method="POST" action="{% url 'profile' %}">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Full Name" value="{{ request.user.client.nome }}">
+    <input type="email" name="email" placeholder="email" value="{{ request.user.email }}">
+    <input type="number" name="phone" placeholder="Phone Number" value="{{ request.user.client.phone }}">
+    <button type="submit">Save</button>
+</form>
+
+<hr>
+
+<h3>Change Password</h3>
+<form method="POST" action="{% url 'profile' %}">
+    {% csrf_token %}
+    
+    <input type="password" name="actual_password" placeholder="Actual Password">
+    <input type="password" name="new_password" placeholder="new_password">
+    <input type="password" name="confirm_password" placeholder="Confirm Password">
+    <button type="submit">Change Password</button>
+</form>
+
 {% endblock %}
