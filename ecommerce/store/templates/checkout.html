@@ -11,7 +11,7 @@
 <p> Total Quantity Itens: {{ quant_cart_itens }} </p>
 <p> Total Price: R$ {{ order_number.total_price }} </p>
 
-<form method="post", action="">
+<form method="post" action="{% url 'end_purchase' order_number.id %}">
     {% csrf_token %}
 
     <h3>chose one Address: </h3>
@@ -31,10 +31,13 @@
 
 
     {% if not request.user.is_authenticated %}
+        <hr>
+        <h4>Enter your e-mail in order to finish the precess: </h4>
         <input type="email" name="email" placeholder="e-mail">
     {% endif %}
         
     <hr>
+    <input type="hidden" value="{{ order_number.id }}" name="order_number">
     <input type="hidden" value="{{ order_number.total_price }}" name="total">
     <button type="submit">Finish Order - R$ {{order_number.total_price}}</button>
 

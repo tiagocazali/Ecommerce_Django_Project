@@ -1,3 +1,4 @@
+from ast import Or
 from locale import Error
 from django.shortcuts import render, redirect
 from .models import *
@@ -170,12 +171,43 @@ def checkout(request):
 
     order_number = Order.objects.get(client = client, finished=False)
     all_address = Address.objects.filter(client=client)
-        
+
     context = {'order_number': order_number,
                'all_address': all_address,
             }
 
     return render(request, 'checkout.html', context)
+
+
+def integration_with_api(request, order_number):
+    
+    if request.method == 'POST':
+        error: None
+        infos = request.POST.dict()
+        total = infos.get('total')
+        order = Order.objects.get(id=order_number)
+
+        if total != order.total_price:
+            error="Invalid Price. Try again!"
+
+        if not "address" in infos:
+            error = "There is no Address for this Order!"
+        else:
+            address = infos.get("address") 
+        
+        if not request.user.is_authenticated:
+            email = infos.get('email')
+            try:
+                validate_email(email)
+            except ValidationError:
+                error = "Invalid E-mail. Add a valid E-mail Address"
+
+        context = {'error': error}
+        print(error, infos)
+        return redirect('store')
+    
+    else:
+        return redirect('store')
 
 
 def new_address(request):
