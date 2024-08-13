@@ -11,6 +11,10 @@
 <p> Total Quantity Itens: {{ quant_cart_itens }} </p>
 <p> Total Price: R$ {{ order_number.total_price }} </p>
 
+{% if error %}
+    <h4>{{error}}</h4>
+{% endif %}
+
 <form method="post" action="{% url 'end_purchase' order_number.id %}">
     {% csrf_token %}
 

@@ -8,6 +8,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from datetime import datetime
 
 
 def homepage(request):
@@ -174,6 +175,7 @@ def checkout(request):
 
     context = {'order_number': order_number,
                'all_address': all_address,
+               'error': None
             }
 
     return render(request, 'checkout.html', context)
@@ -182,12 +184,14 @@ def checkout(request):
 def integration_with_api(request, order_number):
     
     if request.method == 'POST':
+
         error: None
         infos = request.POST.dict()
-        total = infos.get('total')
-        order = Order.objects.get(id=order_number)
 
-        if total != order.total_price:
+        total = infos.get('total')
+        order_number = Order.objects.get(id=order_number)
+
+        if total != order_number.total_price:
             error="Invalid Price. Try again!"
 
         if not "address" in infos:
@@ -201,10 +205,31 @@ def integration_with_api(request, order_number):
                 validate_email(email)
             except ValidationError:
                 error = "Invalid E-mail. Add a valid E-mail Address"
+            
+        if error:
+            
+            all_address = Address.objects.filter(client=order_number.client)
+            context = {'error': error,
+                   'order_number': order_number,
+                   'all_address': all_address,
+                   }
 
-        context = {'error': error}
-        print(error, infos)
-        return redirect('store')
+            return render(request, 'checkout.html', context)
+        
+        if not error:
+            clients = Client.objects.filter(email=email)
+
+            if clients:
+                order_number.client = clients[0]
+            else:
+                order_number.client.email = email
+
+            order_number.address = address
+            order_number.transaction_code = f"{order_number.id}-{datetime.now().timestamp()}"
+            order_number.save()
+
+            #Chama a API do Mercado pado AQUI
+            return redirect('store')
     
     else:
         return redirect('store')
