@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from .api_mercadopago import start_payment
 
 
 def homepage(request):
@@ -185,19 +186,17 @@ def integration_with_api(request, order_number):
     
     if request.method == 'POST':
 
-        error: None
+        error =  None
         infos = request.POST.dict()
 
-        total = infos.get('total')
+        total = float(infos.get('total'))
         order_number = Order.objects.get(id=order_number)
-
-        if total != order_number.total_price:
+       
+        if total != float(order_number.total_price):
             error="Invalid Price. Try again!"
 
         if not "address" in infos:
             error = "There is no Address for this Order!"
-        else:
-            address = infos.get("address") 
         
         if not request.user.is_authenticated:
             email = infos.get('email')
@@ -205,7 +204,7 @@ def integration_with_api(request, order_number):
                 validate_email(email)
             except ValidationError:
                 error = "Invalid E-mail. Add a valid E-mail Address"
-            
+ 
         if error:
             
             all_address = Address.objects.filter(client=order_number.client)
@@ -215,7 +214,8 @@ def integration_with_api(request, order_number):
                    }
 
             return render(request, 'checkout.html', context)
-        
+
+
         if not error:
             clients = Client.objects.filter(email=email)
 
@@ -224,11 +224,18 @@ def integration_with_api(request, order_number):
             else:
                 order_number.client.email = email
 
+            id_address = infos.get("address") 
+            address = Address.objects.get(id=id_address)
             order_number.address = address
+
             order_number.transaction_code = f"{order_number.id}-{datetime.now().timestamp()}"
             order_number.save()
 
-            #Chama a API do Mercado pado AQUI
+            #If everything worked OK, call the function in API_MercadoPago.py
+            order_items = OrderItems.objects.filter(order=order_number)
+            link = ''
+            start_payment(order_items, link) 
+            
             return redirect('store')
     
     else:
