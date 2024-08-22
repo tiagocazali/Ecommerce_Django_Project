@@ -1,6 +1,5 @@
-from ast import Or
-from locale import Error
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .models import *
 from .util import *
 import uuid
@@ -208,10 +207,10 @@ def integration_with_api(request, order_number):
         if error:
             
             all_address = Address.objects.filter(client=order_number.client)
-            context = {'error': error,
-                   'order_number': order_number,
-                   'all_address': all_address,
-                   }
+            context = { 'error': error,
+                        'order_number': order_number,
+                        'all_address': all_address,
+                    }    
 
             return render(request, 'checkout.html', context)
 
@@ -231,15 +230,38 @@ def integration_with_api(request, order_number):
             order_number.transaction_code = f"{order_number.id}-{datetime.now().timestamp()}"
             order_number.save()
 
-            #If everything worked OK, call the function in API_MercadoPago.py
+            #Integration with Mercado Pago Payment 
             order_items = OrderItems.objects.filter(order=order_number)
-            link = ''
-            start_payment(order_items, link) 
+            link = request.build_absolute_uri(reverse('payment_confirmation'))
             
-            return redirect('store')
+            #If everything worked OK, call the function in API_MercadoPago.py
+            payment_link, payment_id = start_payment(order_items, link) 
+
+            payment = Payment.objects.create(payment_id=payment_id, order=order_number)
+            payment.save()
+            
+            return redirect(payment_link)
     
     else:
         return redirect('store')
+
+
+def payment_confirmation(request):
+    print(request.GET.dict())
+
+    {'collection_id': '85954486626', 
+     'collection_status': 'approved', 
+     'payment_id': '85954486626', 
+     'status': 'approved', 
+     'external_reference': 'null', 
+     'payment_type': 'credit_card', 
+     'merchant_order_id': '22051658433', 
+     'preference_id': '1949974391-83a25f60-24b7-4c14-b141-6165b56ffb02', 
+     'site_id': 'MLB', 
+     'processing_mode': 'aggregator', 
+     'merchant_account_id': 'null'
+     }
+    return redirect("store")
 
 
 def new_address(request):

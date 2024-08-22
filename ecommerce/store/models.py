@@ -115,3 +115,9 @@ class Banner(models.Model):
 
     def __str__(self) -> str:
         return f"{self.link} - Active: {self.active}"
+    
+
+class Payment(models.Model):
+    payment_id = models.CharField(max_length=200, null=True, blank=True)
+    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
+    approved = models.BooleanField(default=False)

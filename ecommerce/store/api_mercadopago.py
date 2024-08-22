@@ -28,6 +28,8 @@ def start_payment(order_items, link):
     preference_data = {
         "items": items,
 
+        "auto_return": "all",
+
         "back_urls": {
             'failure': link, 
             'pending': link, 
@@ -39,7 +41,7 @@ def start_payment(order_items, link):
     payment_link = preference_response["response"]["init_point"]
     payment_id = preference_response["response"]["id"]
     
-    print(payment_link, payment_id)
+    return payment_link, payment_id
 
 
 

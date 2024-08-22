@@ -15,7 +15,7 @@
     <h4>{{error}}</h4>
 {% endif %}
 
-<form method="post" action="{% url 'end_purchase' order_number.id %}">
+<form method="post" action="{% url 'payment_start' order_number.id %}">
     {% csrf_token %}
 
     <h3>chose one Address: </h3>
