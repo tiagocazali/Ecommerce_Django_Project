@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<h2>Order APPROVED !</h2>
+<a href="{% url 'store' %}">Go to Store</a>
+
+<h3>You just received an e-mail with all information about your Order! </h3>
+
+<div>
+    <p>Date: {{ order.purchase_date }}</p>>
+    <p>Order ID: {{ order.id }}</p>
+    <p>transaction_code: {{ order.transaction_code }}</p>
+    <p>Price: {{ order.total_price }}</p>
+    <p>Address: {{ order.address.cep }}, {{ order.address.street }} / {{ order.address.city }}-{{ order.address.state }}</p>
+    {% for item in order_items %}
+        <img src="{{ item.stockitem.product.image.url }}" widht="50" height="75">
+        <p>Product: {{ item.stockitem.product.name }}</p>
+        <p>Quant: {{ item.quant }}</p>
+        <p>Preço: {{ item.total_price }}</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

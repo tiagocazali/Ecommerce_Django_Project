@@ -217,29 +217,30 @@ def integration_with_api(request, order_number):
 
         if not error:
             clients = Client.objects.filter(email=email)
-
+            
+            #Add the e-mail
             if clients:
                 order_number.client = clients[0]
+                order_number.client.save()
             else:
                 order_number.client.email = email
+                order_number.client.save()
 
             id_address = infos.get("address") 
-            address = Address.objects.get(id=id_address)
-            order_number.address = address
-
-            order_number.transaction_code = f"{order_number.id}-{datetime.now().timestamp()}"
+            order_number.address = Address.objects.get(id=id_address)
+            order_number.transaction_code = f"{order_number.id}--{datetime.now().timestamp()}"
             order_number.save()
 
             #Integration with Mercado Pago Payment 
             order_items = OrderItems.objects.filter(order=order_number)
-            link = request.build_absolute_uri(reverse('payment_confirmation'))
+            back_link = request.build_absolute_uri(reverse('payment_confirmation'))
             
             #If everything worked OK, call the function in API_MercadoPago.py
-            payment_link, payment_id = start_payment(order_items, link) 
+            payment_link, payment_id = start_payment(order_items, back_link) 
 
+            #Save the Payment_id in database and return de payment Link
             payment = Payment.objects.create(payment_id=payment_id, order=order_number)
             payment.save()
-            
             return redirect(payment_link)
     
     else:
@@ -247,21 +248,32 @@ def integration_with_api(request, order_number):
 
 
 def payment_confirmation(request):
-    print(request.GET.dict())
 
-    {'collection_id': '85954486626', 
-     'collection_status': 'approved', 
-     'payment_id': '85954486626', 
-     'status': 'approved', 
-     'external_reference': 'null', 
-     'payment_type': 'credit_card', 
-     'merchant_order_id': '22051658433', 
-     'preference_id': '1949974391-83a25f60-24b7-4c14-b141-6165b56ffb02', 
-     'site_id': 'MLB', 
-     'processing_mode': 'aggregator', 
-     'merchant_account_id': 'null'
-     }
-    return redirect("store")
+    infos = request.GET.dict()
+    status = infos.get('status')
+    preference_id = infos.get('preference_id')
+
+    if status == 'approved':
+        payment = Payment.objects.get(payment_id=preference_id)
+        payment.approved = True
+        payment.order.finished = True
+        payment.order.purchase_date = datetime.now()
+        payment.order.save() 
+        payment.save()
+
+        return redirect("payment_approved", payment.order.id)
+    
+    else:
+        return redirect("checkout")
+   
+
+def payment_approved(request, order_id):
+    order = Order.objects.get(id=order_id, finished=True)
+    order_items = OrderItems.objects.filter(order=order)
+    context = { 'order': order,
+               'order_items': order_items 
+            }
+    return render(request, 'payment_approved.html', context)
 
 
 def new_address(request):
@@ -356,6 +368,15 @@ def profile(request):
             }
     
     return render(request, 'user/profile.html', context)
+
+
+@login_required
+def my_orders(request):
+    client = request.user.client
+    orders = Order.objects.filter(finished=True, client=client).order_by("-purchase_date")
+    #falta colocar os itens de cada pedido aqui!!!
+    context = {"orders": orders}
+    return render(request, "user/my_orders.html", context)
 
 
 def login_page(request):
