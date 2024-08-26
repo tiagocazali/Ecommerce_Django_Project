@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'store.global_variables.quant_cart_itens',
                 'store.global_variables.all_category_und_type',
+                'store.global_variables.management_team',
             ],
         },
     },
@@ -137,5 +138,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login_page'
 
-# Will simulate a e-mail "Reset Password" - and print it in Console.
+# Will simulate a e-mail "Reset Password" - and print it in Console. (Change SMTP to console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = "smtp@gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "XYZ@gmail.com"
+EMAIL_HOST_PASSWORD = "GERAR NA TELA DO GMAIL"

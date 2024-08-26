@@ -23,6 +23,10 @@
         <a href="{% url 'login_page' %}">Login</a>
     {% endif %}
 
+    {% if is_management_team %}
+        <a href="{% url 'manage_store' %}">Manage Store</a>
+    {% endif %}
+
 
     <a href="{% url 'cart' %}">Cart</a>
     <img src="{% static 'images/carrinho.png' %}" width="30px" height="30px"> 

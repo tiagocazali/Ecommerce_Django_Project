@@ -33,3 +33,12 @@ def all_category_und_type(request):
     all_type = CategoryType.objects.all()
 
     return { 'all_category':all_category, 'all_type':all_type}
+
+
+def management_team(request):
+    is_management_team = False
+    if request.user.is_authenticated: 
+        if request.user.groups.filter(name="Management_Team").exists():
+            is_management_team = True
+    
+    return {'is_management_team': is_management_team}

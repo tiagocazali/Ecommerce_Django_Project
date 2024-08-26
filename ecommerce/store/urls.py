@@ -17,6 +17,7 @@ urlpatterns = [
     path('cart/', views.cart, name="cart"),
     path('add-cart/<int:product_id>/', views.add_to_cart, name="add_to_cart"),
     path('remove-cart/<int:product_id>/', views.remove_to_cart, name="remove_to_cart"),
+    
     path('payment-start/<int:order_number>/', views.integration_with_api, name="payment_start"),
     path('payment-confirmation/', views.payment_confirmation, name="payment_confirmation"),
     path('payment-approved/<int:order_id>/', views.payment_approved, name="payment_approved"),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('create-account/', views.create_account, name="create_account"),
     path('login-page/', views.login_page, name="login_page"),
     path('logout-page', views.logout_page, name="logout_page"),
+
+    path('manage-store', views.manage_store, name="manage_store"),
 
     # Default Django Views - Used for Change/Reset Password
     path("password_change/", views_django.PasswordChangeView.as_view(), name="password_change"),

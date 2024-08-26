@@ -471,3 +471,7 @@ def create_account(request):
 def logout_page(request):
     logout(request)
     return redirect('login_page')
+
+@login_required
+def manage_store(request):
+    return render(request, 'manage/manage_store.html')
