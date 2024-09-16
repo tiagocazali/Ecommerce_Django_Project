@@ -46,6 +46,7 @@ class Product(models.Model):
         total = sum([item.quant for item in itens ])
         return total
 
+
 class Color(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     color_code = models.CharField(max_length=10, null=True, blank=True)
@@ -78,6 +79,7 @@ class Address(models.Model):
     def __str__(self) -> str:
         return f"{self.client} / {self.description} / {self.street}, {self.number} - {self.city}-{self.state}"
 
+
 class Order(models.Model):
     client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
@@ -93,6 +95,17 @@ class Order(models.Model):
         all_itens = OrderItems.objects.filter(order__id=self.id)
         total = sum([item.total_price for item in all_itens])
         return total
+
+    @property
+    def total_quant(self):
+        all_itens = OrderItems.objects.filter(order__id=self.id)
+        quant_total = sum([item.quant for item in all_itens])
+        return quant_total
+    
+    @property
+    def all_itens(self):
+        all_itens = OrderItems.objects.filter(order__id=self.id)
+        return all_itens    
 
 
 class OrderItems(models.Model):

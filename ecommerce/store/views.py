@@ -472,6 +472,26 @@ def logout_page(request):
     logout(request)
     return redirect('login_page')
 
+
 @login_required
 def manage_store(request):
-    return render(request, 'manage/manage_store.html')
+    if request.user.groups.filter(name="Management_Team").exists():
+
+        finished_orders = Order.objects.filter(finished=True)
+        quant_orders = len(finished_orders)
+        total_invoice = sum([item.total_price for item in finished_orders]) 
+        total_itens = sum([item.total_quant for item in finished_orders])
+
+        context = {'quant_orders': quant_orders,
+                   'total_invoice': total_invoice,
+                   'total_itens': total_itens }
+         
+        return render(request, 'manage/manage_store.html', context)
+        
+    else:
+        return redirect('store')
+    
+
+def download_report(request, report_name):
+    print(report_name)
+    return redirect('manage_store')

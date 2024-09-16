@@ -6,6 +6,15 @@
 
 <h3> MANAGE STORE </h3>
 
+<P>Finished Order: {{quant_orders}}</P>
+<P>Total Invoice: {{total_invoice}}</P>
+<P>Total Itens: {{total_itens}}</P>
 
+<hr>
+<h3>Download Report</h3>
 
-{% endblock %}
+<a href="{% url 'download_report' 'orders' %}">Download Orders</a>
+<a href="{% url 'download_report' 'client_list' %}">Download Client List</a>
+<a href="{% url 'download_report' 'address_list'%}">Download Address List</a>
+
+{% endblock %} 

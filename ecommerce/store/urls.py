@@ -31,6 +31,7 @@ urlpatterns = [
     path('logout-page', views.logout_page, name="logout_page"),
 
     path('manage-store', views.manage_store, name="manage_store"),
+    path('download-report/<str:report_name>/', views.download_report, name="download_report"),
 
     # Default Django Views - Used for Change/Reset Password
     path("password_change/", views_django.PasswordChangeView.as_view(), name="password_change"),
