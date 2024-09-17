@@ -492,6 +492,20 @@ def manage_store(request):
         return redirect('store')
     
 
+@login_required
 def download_report(request, report_name):
-    print(report_name)
-    return redirect('manage_store')
+    
+    if request.user.groups.filter(name="Management_Team").exists():
+        if report_name == 'orders':
+            infos = Order.objects.filter(finished=True)
+
+        elif report_name == 'client_list':
+            infos = Client.objects.all()
+
+        elif report_name == 'address_list':
+            infos = Address.objects.all()
+    
+        return export_csv(infos) #Function in Util.py
+        
+    else: #User is not part of Management Team
+            return redirect('store')

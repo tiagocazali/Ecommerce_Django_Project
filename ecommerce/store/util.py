@@ -1,5 +1,7 @@
 from .models import Product, Client, StockItem
 from django.db.models import Min, Max
+from django.http import HttpResponse
+import csv
 
 
 def get_user_id(request):
@@ -82,3 +84,25 @@ def order_itens(product_list, order):
         product_list = [item[1] for item in aux_list]
 
     return product_list
+
+
+def export_csv(infos):
+    
+    #use Metadata, name of the columns
+    columns = infos.model._meta.fields
+    columns_name = [column.name for column in columns ]
+
+    #Create a HTTP Response in format CSV and force the download = Attachment
+    answer = HttpResponse(content_type = "text/csv")
+    answer['Content-Disposition'] = "Attachment; filename=Download_Report.csv"
+
+    #Ad only the first Row, with the columns name
+    create_csv = csv.writer(answer, delimiter=';')
+    create_csv.writerow(columns_name)
+
+    #Add the others columns, the Values
+    for each_line in infos.values_list():
+        create_csv.writerow(each_line)
+
+    return answer
+
