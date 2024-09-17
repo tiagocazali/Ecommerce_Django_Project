@@ -6,9 +6,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>E-commerce TCM </title>
+    
     <link rel="stylesheet" type="text/css" , href="{% static 'css/main.css' %}">
-    <script src="https://kit.fontawesome.com/3e0f5076df.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"/>
+
 </head>
 
 <body>
@@ -16,7 +21,16 @@
 
     {% block body %}
     {% endblock %}
+
+    {% include 'footer.html' %}
+
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/checkout.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/loja.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/produto.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/scripts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slider.js' %}"></script>
 
 </body>
 
