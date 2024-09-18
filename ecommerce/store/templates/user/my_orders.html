@@ -14,7 +14,7 @@
     <p>Price: {{ order.total_price }}</p>
     <p>Address: {{ order.address.cep }}, {{ order.address.street }} / {{ order.address.city }}-{{ order.address.state }}</p>
     {% for item in pedido.itens %}
-        <img src="{{ item.item_estoque.produto.imagem.url }}" widht="50" height="75">
+        <img src="{{ item.item_estoque.produto.imagem.url }}" width="50" height="75">
         <p>Produto: {{ item.item_estoque.produto.nome }}</p>
         <p>Quantidade: {{ item.quantidade }}</p>
         <p>Preço: {{ item.preco_total }}</p>
