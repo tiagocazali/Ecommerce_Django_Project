@@ -71,12 +71,15 @@ def product_description(request, product_id, color_id=None):
             selected_color = Color.objects.get(id=color_id)
             product_in_stock = StockItem.objects.filter(product=product, quant__gt=0, color__id=color_id)
             sizes = {each.size for each in product_in_stock}
+    
+    similar_items = Product.objects.filter(category__id=product.category.id, categorytype__id=product.categorytype.id).exclude(id=product.id)[:4]
 
     context = {'product': product, 
                'in_stock': in_stock, 
                'colors': colors, 
                'sizes': sizes,
                'selected_color': selected_color,
+               'similar_items': similar_items,
             }
     
     return render(request, 'product_description.html', context)
