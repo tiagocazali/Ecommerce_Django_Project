@@ -315,7 +315,7 @@ def profile(request):
 
     if request.method == 'POST':
         infos = request.POST.dict()
-        
+
         # user clicked in "Change Password"
         if 'actual_password' in infos:
 
@@ -328,13 +328,14 @@ def profile(request):
                 if user:
                     user.set_password(new_password)
                     user.save()
+                    login(request, user)
                     changes_done = True
                 
                 else:
                     problem = "Wrong password! The Actual password is NOT correct. Try Again"
 
             else:
-                problem = "New Password and Confirmation Password is NOT igual! Try again"
+                problem = "New Password and Confirmation Password are NOT equal! Try again."
 
 
         # user is updating personal data - clicked in "Save"
@@ -343,10 +344,13 @@ def profile(request):
             email = infos.get('email')
             phone = infos.get('phone')
 
+            if not email.strip():
+                problem = "E-mail cannot be empty. Please enter a valid e-mail."
+
             #user changed his E-mail. Check if the new e-mail is available
-            if email != request.user.email:
+            elif email != request.user.email:
                 search = User.objects.filter(email=email)
-                if len(search) > 0:
+                if search.exists():
                     problem = "E-mail already exist in Database. Try another one!"
 
             if not problem:

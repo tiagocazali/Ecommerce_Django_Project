@@ -4,38 +4,82 @@
 
 {% block body %}
 
-<h3> PROFILE </h3>
+<main class="principal">
+    <section class="conta">
+        <div class="conta__container">
 
-<a href="{% url 'logout_page' %}">Logout</a>
+            {% if changes_done %}
+                <p>OK! Changes Save Successfully!</p>
+            {% endif %}
 
-{% if changes_done %}
-    <p>OK! Changes Save Successfully!</p>
-{% endif %}
+            {% if problem %}
+                <p> {{ problem }} </p>
+            {% endif %}
 
-{% if problem %}
- <p> {{ problem }} </p>
-{% endif %}
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Personal Information</p>
+            </div>
 
-<h3>Personal Information</h3>
-<form method="POST" action="{% url 'profile' %}">
-    {% csrf_token %}
+            <form class="conta__form" method="post" action="{% url 'profile' %}">
+                {% csrf_token %}
+                
+                <div class="conta__item">
+                    <label for="name">Full Name</label> 
+                    <input name="name" type="text" placeholder="Full Name" value="{{ request.user.client.nome }}"/>
+                </div>
 
-    <input type="text" name="name" placeholder="Full Name" value="{{ request.user.client.nome }}">
-    <input type="email" name="email" placeholder="email" value="{{ request.user.email }}">
-    <input type="number" name="phone" placeholder="Phone Number" value="{{ request.user.client.phone }}">
-    <button type="submit">Save</button>
-</form>
+                <div class="conta__item">
+                    <label for="email">E-mail</label>
+                    <input name="email" type="email" placeholder="E-mail" value="{{ request.user.email }}"/>
+                </div>
 
-<hr>
+                <div class="conta__item">
+                    <label for="phone">Phone</label>
+                    <input name="phone" type="number" placeholder="Phone" value="{{ request.user.client.phone}}"/>
+                </div>
 
-<h3>Change Password</h3>
-<form method="POST" action="{% url 'profile' %}">
-    {% csrf_token %}
-    
-    <input type="password" name="actual_password" placeholder="Actual Password">
-    <input type="password" name="new_password" placeholder="new_password">
-    <input type="password" name="confirm_password" placeholder="Confirm Password">
-    <button type="submit">Change Password</button>
-</form>
+                <button class="subtotal__botao" type="submit"> SAVE </button>
+
+            </form>
+        </div>
+
+        <div class="conta__container">
+
+            {% if changes_done %}
+                <p>OK! Changes Save Successfully!</p>
+            {% endif %}
+
+            {% if problem %}
+                <p> {{ problem }} </p>
+            {% endif %}
+
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Change Password</p>
+            </div>
+
+            <form class="conta__form" method="post" action="{% url 'profile' %}">
+                {% csrf_token %}
+                
+                <div class="conta__item">
+                    <label for="name">Actual Password</label> 
+                    <input name="actual_password" type="password"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="email">New Password</label>
+                    <input name="new_password" type="email"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="phone">Confirm Password</label>
+                    <input name="confirm_password" type="password"/>
+                </div>
+
+                <button class="subtotal__botao" type="submit"> Change Password </button>
+
+            </form>
+        </div>
+    </section>
+</main>
 
 {% endblock %}
