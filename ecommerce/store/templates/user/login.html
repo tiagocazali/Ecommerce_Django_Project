@@ -4,22 +4,41 @@
 
 {% block body %}
 
-<h3> LOGIN </h3>
+<main class="principal"></main>
+    <section class="conta">
+        <div class="conta__container">
 
-{% if problem %}
-    <h4>User not found. Incorrect user or password!</h4>
-{% endif %}
+            {% if problem %}
+            <h4>User not found. Incorrect user or password!</h4>
+            {% endif %}
 
-<form method="POST" action="{% url 'login_page' %}">
-    {% csrf_token %}
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Login</p>
+            </div>
 
-    <input type="email" name="email" placeholder="email">
-    <input type="password" name="password" placeholder="password">
-    <button type="submit">Submit</button>
+            <form class="conta__form" method="post" action="{% url 'login_page' %}">
+                {% csrf_token %}
 
-</form>
+                <div class="conta__item">
+                    <label for="email">E-mail</label>
+                    <input name="email" type="email" placeholder="E-mail"/>
+                </div>
 
-<a href="{% url 'create_account' %}">Create New Account</a>
-<a href="{% url 'password_reset' %}">Forgot the password?</a>
+                <div class="conta__item">
+                    <label for="password">Password</label>
+                    <input name="password" type="password" placeholder="Password" />
+                </div>
+
+                <button class="subtotal__botao" type="submit"> Login </button>
+
+            </form>
+
+            <a href="{% url 'create_account' %}">Create New Account</a>
+            <a href="{% url 'password_reset' %}">Forgot the password?</a>
+
+        </div>
+
+    </section>
+</main>
 
 {% endblock %}
