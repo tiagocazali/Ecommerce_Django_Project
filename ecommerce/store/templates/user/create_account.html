@@ -4,22 +4,45 @@
 
 {% block body %}
 
-<h3> CREATE NEW ACCOUNT </h3>
+<main class="principal"></main>
+    <section class="conta">
+        <div class="conta__container">
 
-{% if problem %}
-    <h4>{{ problem }}</h4>
-{% endif %}
+            {% if problem %}
+            <h4>{{ problem }}</h4>
+            {% endif %}
 
-<form method="POST" action="">
-    {% csrf_token %}
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Create New Account</p>
+            </div>
 
-    <input type="email" name="email" placeholder="email">
-    <input type="password" name="password" placeholder="password">
-    <input type="password" name="confirm_password" placeholder="confirm_password">
-    <button type="submit">Create Account</button>
+            <form class="conta__form" method="post" action="{% url 'create_account' %}">
+                {% csrf_token %}
 
-</form>
+                <div class="conta__item conta__item--email">
+                    <label for="email">E-mail</label>
+                    <input name="email" type="email" placeholder="E-mail"/>
+                </div>
 
-<a href="{% url 'login_page' %}">Already have a Account? Login</a>
+                <div class="conta__item">
+                    <label for="password">Password</label>
+                    <input name="password" type="password" placeholder="Password" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input name="confirm_password" type="password" placeholder="confirm_password" />
+                </div>
+
+                <button class="subtotal__botao" type="submit"> Create Account </button>
+
+            </form>
+
+            <a href="{% url 'login_page' %}">Already have a Account? Login</a>
+
+        </div>
+
+    </section>
+</main>
 
 {% endblock %}

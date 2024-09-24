@@ -404,7 +404,7 @@ def login_page(request):
 
             if user:
                 login(request, user)
-                return redirect('profile')
+                return redirect('store')
             else:
                 problem = True
 
