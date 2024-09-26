@@ -4,56 +4,98 @@
 
 {% block body %}
 
-<h3> CARRINHO </h3>
-
-{% if user_exist %}
-
-    <h4> Order Number: {{ order_number.id }}</h4>
-    <p> Total Quantity Itens: {{ quant_cart_itens }} </p>
-    <p> Total Price: R$ {{ order_number.total_price }} </p>
-
-    {% for item in order_itens %}
-        <p>
-            <img src="{{ item.stockitem.product.image.url }}" width="50" height="70">
-            Product: {{ item.stockitem.product.name }}; 
-            Color: {{ item.stockitem.color.name }}; 
-            Size: {{ item.stockitem.size }}; 
-            
-            <div style="display: flex;">
-                Quantity :
-
-                <!-- button to REMOVE one item -->
-                <form method="post" action="{% url 'remove_to_cart' item.stockitem.product.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="size" value="{{ item.stockitem.size }}">                   
-                    <input type="hidden" name="color" value="{{ item.stockitem.color.id }}" >
-                    <button type="submit">-</button>
-                </form>
-
-                {{ item.quant }}
-
-                <!-- bottom to ADD one item-->
-                <form method="post" action="{% url 'add_to_cart' item.stockitem.product.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="size" value="{{ item.stockitem.size }}">                   
-                    <input type="hidden" name="color" value="{{ item.stockitem.color.id }}" >
-                    <button type="submit">+</button>
-                </form>
+<main class="principal">
+    {% if user_exist %}
+    <section class="carrinho">
+        <div class="sacola">
+            <div class="sacola__titulos">
+                <h1 class="sacola__titulo">Your Cart</h1>
+                <p> Agora produtos em estoque você retira em loja em até 4 horas e
+                ainda ganha no ato da retirada.</p>
             </div>
 
-            Price: {{ item.stockitem_id.product_id.price }};
-            Total: {{ item.total_price }}
-        </p>
-        <hr>
+            <table class="tabela">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quant</th>
+                    <th>Total</th>
+                </tr>
 
-    {% endfor %}
+                {% for item in order_itens %}
+                <tr>
+                    <td class="tabela__produto">
+                        <div class="tabela__imagem">
+                            <img
+                                src="{{ item.stockitem.product.image.url }}"
+                                alt="{{ item.stockitem.product.name }}"
+                            />
+                        </div>
+                        <div class="tabela__produto-textos">
+                            <p><b>{{ item.stockitem.product.name }}</b></p>
+                            <p><b>Size:</b> {{ item.stockitem.size }}</p>
+                            <p><b>Color:</b> {{ item.stockitem.color.name }}</p>
+                        </div>
+                    </td>
 
-    <a href="{% url 'checkout' %}">GO TO CHECKOUT</a>
+                    <td class="tabela__preco-unit">
+                        <p class="tabela__preco">{{ item.stockitem.product.price }}</p>
+                    </td>
 
-<!-- If user doesn't exist, the cart is empty  -->
-{% else %}
-    <h3> You don't have itens in your cart </h3>
+                    <td class="tabela__qtd">
+                        <div class="tabela__quantidade">
 
-{% endif %}
+                            <!-- button to REMOVE one item -->
+                            <form method="post" action="{% url 'remove_to_cart' item.stockitem.product.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="size" value="{{ item.stockitem.size }}">                   
+                                <input type="hidden" name="color" value="{{ item.stockitem.color.id }}" >
+                                <button type="submit">-</button>
+                            </form>
+
+                            <span>{{ item.quant }}</span>
+
+                            <!-- bottom to ADD one item-->
+                            <form method="post" action="{% url 'add_to_cart' item.stockitem.product.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="size" value="{{ item.stockitem.size }}">                   
+                                <input type="hidden" name="color" value="{{ item.stockitem.color.id }}" >
+                                <button type="submit">+</button>
+                            </form>
+                        </div>
+                    </td>
+
+                    <td>
+                        <p class="tabela__preco tabela__preco--total">{{ item.total_price }}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="subtotal">
+            <div class="subtotal__infos">
+                <p>Total Quantity Itens:</p>
+                <p>{{ quant_cart_itens }}</p>
+            </div>
+
+            <div class="subtotal__infos subtotal__infos--sborda">
+                <p>Total</p>
+                <p>R$ {{ order_number.total_price }}</p>
+            </div>
+
+            <a href="{% url 'checkout' %}" class="subtotal__botao">GO TO CHECKOUT</a>
+
+        </div>
+
+    </section>
+
+    <!-- If user doesn't exist, the cart is empty  -->
+    {% else %}
+        <h3> You don't have itens in your cart </h3>
+
+    {% endif %}
+
+  </main>
 
 {% endblock %}
