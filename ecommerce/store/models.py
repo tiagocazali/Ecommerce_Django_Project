@@ -103,9 +103,9 @@ class Order(models.Model):
         return quant_total
     
     @property
-    def all_itens(self):
-        all_itens = OrderItems.objects.filter(order__id=self.id)
-        return all_itens    
+    def order_itens(self):
+        order_itens = OrderItems.objects.filter(order__id=self.id)
+        return order_itens    
 
 
 class OrderItems(models.Model):

@@ -381,8 +381,9 @@ def profile(request):
 def my_orders(request):
     client = request.user.client
     orders = Order.objects.filter(finished=True, client=client).order_by("-purchase_date")
-    #falta colocar os itens de cada pedido aqui!!!
+
     context = {"orders": orders}
+
     return render(request, "user/my_orders.html", context)
 
 
