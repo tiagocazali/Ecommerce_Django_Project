@@ -4,17 +4,33 @@
 
 {% block body %}
 
-<h3> MANAGE STORE </h3>
+<main class="principal"></main>
+    <section class="conta">
+        <div class="conta__container">
 
-<P>Finished Order: {{quant_orders}}</P>
-<P>Total Invoice: {{total_invoice}}</P>
-<P>Total Itens: {{total_itens}}</P>
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Key Indicators</p>
+            </div>
 
-<hr>
-<h3>Download Report</h3>
+            <P>Finished Order: {{quant_orders}}</P>
+            <P>Total Invoice: R$ {{total_invoice}}</P>
+            <P>Total Itens: {{total_itens}}</P>
 
-<a href="{% url 'download_report' 'orders' %}">Download Orders</a>
-<a href="{% url 'download_report' 'client_list' %}">Download Client List</a>
-<a href="{% url 'download_report' 'address_list'%}">Download Address List</a>
+        </div>
+
+        <div class="conta__container">
+
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Download Report</p>
+            </div>
+
+            <a href="{% url 'download_report' 'orders' %}" class="subtotal__botao">Download Orders</a>
+            <a href="{% url 'download_report' 'client_list' %}" class="subtotal__botao">Download Client List</a>
+            <a href="{% url 'download_report' 'address_list'%}" class="subtotal__botao">Download Address List</a>
+            
+        </div>
+
+    </section>
+</main>
 
 {% endblock %} 
