@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block body %}
+
+<main class="principal"></main>
+    <section class="conta">
+        <div class="conta__container">
+
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">New Address</p>
+            </div>
+
+            <form class="conta__form" method="post" action="{% url 'new_address' %}">
+                {% csrf_token %}
+
+                <div class="conta__item">
+                    <label for="description">description</label>
+                    <input name="description" type="text" placeholder="description"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="street">street</label>
+                    <input name="street" type="text" placeholder="street"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="number">number</label>
+                    <input name="number" type="text" placeholder="number"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="complement">complement</label>
+                    <input name="complement" type="text" placeholder="complement"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="city">city</label>
+                    <input name="city" type="text" placeholder="city"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="state">state</label>
+                    <input name="state" type="text" placeholder="state"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="cep">cep</label>
+                    <input name="cep" type="text" placeholder="cep"/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="country">country</label>
+                    <input name="country" type="text" placeholder="country"/>
+                </div>
+
+                <button class="subtotal__botao" type="submit"> Add Address </button>
+
+            </form>
+
+            <a href="{% url 'checkout' %}">Back to Checkout</a>
+
+        </div>
+
+    </section>
+</main>
+
+{% endblock %}

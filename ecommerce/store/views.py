@@ -172,6 +172,9 @@ def checkout(request):
     # User doesn't exist. Cart is empty
     if not client:
         return redirect('store')
+    
+    if not request.user.is_authenticated:
+        return redirect('login_page')
 
     order_number = Order.objects.get(client = client, finished=False)
     all_address = Address.objects.filter(client=client)
@@ -219,16 +222,7 @@ def integration_with_api(request, order_number):
 
 
         if not error:
-            clients = Client.objects.filter(email=email)
             
-            #Add the e-mail
-            if clients:
-                order_number.client = clients[0]
-                order_number.client.save()
-            else:
-                order_number.client.email = email
-                order_number.client.save()
-
             id_address = infos.get("address") 
             order_number.address = Address.objects.get(id=id_address)
             order_number.transaction_code = f"{order_number.id}--{datetime.now().timestamp()}"
@@ -304,7 +298,7 @@ def new_address(request):
         all_address = Address.objects.filter(client=client)
         
         context = {'all_address': all_address,}
-        return render(request, 'new_address.html', context)
+        return render(request, 'user/new_address.html', context)
 
 
 @login_required
